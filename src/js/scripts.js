@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import * as dat from 'dat.gui'
 
 const renderer = new THREE.WebGL1Renderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0xC8C8C8);
+renderer.shadowMap.enabled = true;
 
 document.body.appendChild(renderer.domElement);
 
@@ -16,6 +19,16 @@ const camera = new THREE.PerspectiveCamera(
         1000
 );
 
+
+//Create a DirectionalLight and turn on shadows for the light
+const directionalLight = new THREE.DirectionalLight( 0xffffff, .8 );
+scene.add( directionalLight );
+directionalLight.position.set(-30, 60,0)
+
+const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+scene.add(dLightHelper);
+
+
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.update();
 
@@ -26,12 +39,25 @@ camera.position.z = 100;
 
 
 const boxGeometry = new THREE.BoxGeometry(2,72,4);
-const boxMaterial = new THREE.MeshBasicMaterial({color: 0xC8C8C8});
+const boxMaterial = new THREE.MeshToonMaterial({
+    color: 0xFF0000
+});
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
 scene.add(box);
+box.castShadow = true;
 
 const gridHelper = new THREE.GridHelper(50,10);
 scene.add(gridHelper);
+
+const gui = new dat.GUI();
+
+const options = {
+    color: '#ffee00' 
+}
+
+gui.addColor(options, 'color').onChange(function(e){
+    box.material.color.set(e);
+});
 
 function animate(){
     //requestAnimationFrame(animate);
