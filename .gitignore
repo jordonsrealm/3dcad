@@ -4,5 +4,5 @@
 
 
 # ignore ALL files in ANY directory named temp
-node_modules
-.parcel-cache
+node_modules/
+.parcel-cache/

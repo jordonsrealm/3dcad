@@ -552,9 +552,9 @@ const orbitControls = new (0, _orbitControlsJs.OrbitControls)(camera, renderer.d
 orbitControls.update();
 const axesHelper = new _three.AxesHelper(5);
 scene.add(axesHelper);
-camera.position.z = 100;
+camera.position.z = 50;
 const boxGeometry = new _three.BoxGeometry(2, 72, 4);
-const boxMaterial = new _three.MeshToonMaterial({
+const boxMaterial = new _three.MeshBasicMaterial({
     color: 0xFF0000
 });
 const box = new _three.Mesh(boxGeometry, boxMaterial);
@@ -569,11 +569,24 @@ const options = {
 gui.addColor(options, "color").onChange(function(e) {
     box.material.color.set(e);
 });
+// gui.add(boxGeometry, 'width')
+//     .min(1)
+//     .max(10)
+//     .step(0.1)
+//     .name('cubeWidth')
+//     .onChange((value) => {
+//         box.geometry.dispose();
+//         boxGeometry.parameters.width = parameter.width
+//         console.log(mesh)
+//     })
+gui.add(camera.position, "x", -100, 100);
+gui.add(camera.position, "y", -100, 100);
+gui.add(camera.position, "z", -100, 100);
 function animate() {
-    //requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
-renderer.setAnimationLoop(animate);
+animate(); //renderer.setAnimationLoop(animate);
 
 },{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","dat.gui":"k3xQk"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");

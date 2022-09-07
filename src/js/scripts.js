@@ -35,11 +35,10 @@ orbitControls.update();
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 
-camera.position.z = 100;
-
+camera.position.z = 50;
 
 const boxGeometry = new THREE.BoxGeometry(2,72,4);
-const boxMaterial = new THREE.MeshToonMaterial({
+const boxMaterial = new THREE.MeshBasicMaterial({
     color: 0xFF0000
 });
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -52,17 +51,33 @@ scene.add(gridHelper);
 const gui = new dat.GUI();
 
 const options = {
-    color: '#ffee00' 
+    color: '#ffee00'
 }
 
 gui.addColor(options, 'color').onChange(function(e){
     box.material.color.set(e);
 });
 
+// gui.add(boxGeometry, 'width')
+//     .min(1)
+//     .max(10)
+//     .step(0.1)
+//     .name('cubeWidth')
+//     .onChange((value) => {
+//         box.geometry.dispose();
+
+//         boxGeometry.parameters.width = parameter.width
+//         console.log(mesh)
+
+//     })
+gui.add(camera.position, 'x', -100, 100);
+gui.add(camera.position, 'y', -100, 100);
+gui.add(camera.position, 'z', -100, 100);
+
 function animate(){
-    //requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
     renderer.render(scene, camera);
 }
-
-renderer.setAnimationLoop(animate);
+animate();
+//renderer.setAnimationLoop(animate);
