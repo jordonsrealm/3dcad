@@ -1,0 +1,14 @@
+{
+  "name": "3dcad",
+  "version": "1.0.0",
+  "description": "3D CAD Software to use for house construction",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jordon Tijerina",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.144.0"
+  }
+}
