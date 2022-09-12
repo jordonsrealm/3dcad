@@ -535,7 +535,7 @@ function hmrAcceptRun(bundle, id) {
 var _three = require("three");
 var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
 var _datGui = require("dat.gui");
-const twoBy4 = {
+const twoBy4Dims = {
     2: 2 / 12,
     4: 4 / 12
 };
@@ -585,71 +585,104 @@ function buildHouseWalls() {
     createRightWall();
 }
 function createLeftWall(wall) {
-    creatTopPlate({
-        ...wall,
-        center: {}
-    });
-    createBottomPlate({
-        ...wall,
-        center: {}
-    });
-    createStuds({
-        ...wall,
-        center: {}
-    });
+    creatTopPlate(wall);
+    createBottomPlate(wall);
+    createStuds(wall);
 }
 function creatTopPlate(wall) {
-    createBoard({
-        ...wall,
-        center: {
-            x: wall.center.x,
-            y: wall.center.y + wall.height / 2,
-            z: wall.center.z
-        }
-    }, "y");
-}
-function createBottomPlate(wall) {
-    var new_center;
-    wall.axis;
-    createBoard({
-        ...wall,
-        center: {
-            x: wall.center.x,
-            y: wall.center.y - wall.height / 2,
-            z: wall.center.z
-        }
-    }, "y");
-}
-function createStuds(wall) {
-    var studsStartingPoint = {
-        ...wall,
-        center: {
-            x: wall.center.x + wall.x,
-            y: wall.center.y,
-            z: wall.center.z
-        }
-    };
-}
-function createBoard(wall, axis) {
-    var boxGeometry;
-    switch(axis){
+    switch(wall.axis){
         case "x":
-            boxGeometry = new _three.BoxGeometry(2 / 12, 6, 4 / 12);
+            wall.center.y += wall.height / 2 + twoBy4Dims[2] / 2;
+            createBoard({
+                width: wall.height,
+                height: twoBy4Dims[2],
+                depth: twoBy4Dims[4]
+            }, {
+                x: 0,
+                y: wall.center.y,
+                z: 0
+            });
             break;
         case "y":
-            boxGeometry = new _three.BoxGeometry(6, 2 / 12, 4 / 12);
+            wall.center.x += wall.height / 2 + twoBy4Dims[2] / 2;
+            createBoard({
+                width: twoBy4Dims[2],
+                height: wall.height,
+                depth: twoBy4Dims[4]
+            }, {
+                x: wall.center.x,
+                y: 0,
+                z: 0
+            });
             break;
         default:
-            boxGeometry = new _three.BoxGeometry(4 / 12, 6, 2 / 12);
+            wall.center.y += wall.height / 2 + twoBy4Dims[2] / 2;
+            createBoard({
+                width: twoBy4Dims[4],
+                height: twoBy4Dims[2],
+                depth: wall.height
+            }, {
+                x: 0,
+                y: wall.center.y,
+                z: 0
+            });
     }
+}
+function createBottomPlate(wall) {
+    switch(wall.axis){
+        case "x":
+            wall.center.y -= wall.height / 2 - twoBy4Dims[2] / 2;
+            createBoard({
+                width: wall.height,
+                height: twoBy4Dims[2],
+                depth: twoBy4Dims[4]
+            }, {
+                x: 0,
+                y: wall.center.y,
+                z: 0
+            });
+            break;
+        case "y":
+            wall.center.y -= wall.length / 2 - twoBy4Dims[2] / 2;
+            createBoard({
+                width: twoBy4Dims[2],
+                height: wall.height,
+                depth: twoBy4Dims[4]
+            }, {
+                x: wall.center.y,
+                y: 0,
+                z: 0
+            });
+            break;
+        default:
+            wall.center.y -= wall.height / 2 - twoBy4Dims[2] / 2;
+            createBoard({
+                width: twoBy4Dims[4],
+                height: twoBy4Dims[2],
+                depth: wall.height
+            }, {
+                x: 0,
+                y: wall.center.y,
+                z: 0
+            });
+    }
+}
+function createStuds(wall) {
+    var dims;
+    var sPt;
+    wall.axis;
+    while(sPt.length < wall.length);
+}
+function createBoard(dim, position) {
+    var boxGeometry = new _three.BoxGeometry(dim.width, dim.height, dim.depth);
     var boxMaterial = new _three.MeshBasicMaterial({
-        color: 0xFF0000,
+        color: 0xe6bf00,
         wireframe: false
     });
     var box1 = new _three.Mesh(boxGeometry, boxMaterial);
     scene.add(box1);
     box1.castShadow = true;
-    box1.position.set(wall.x, wall.y, wall.z);
+    box1.position.set(position.x, position.y, position.z);
 }
 function addGuiControls() {
     const gui = new _datGui.GUI();
@@ -679,9 +712,12 @@ createLeftWall({
         y: 0,
         z: 0
     },
-    axis: "x",
+    axis: "z",
     offset: 2
 });
+//creatTopPlate({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'z', offset: 2});
+//createBottomPlate({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'z', offset: 2});
+//createBoard({x: 1, y: 1, z: 1}, {x: .5, y: .5, z: .5});
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);

@@ -3,7 +3,7 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui'
 
 
-const twoBy4 = {
+const twoBy4Dims = {
     2: 2/12,
     4: 4/12
 }
@@ -70,61 +70,80 @@ function buildHouseWalls(){
 }
 
 function createLeftWall(wall){ 
-    creatTopPlate({...wall, center: {}});
-    createBottomPlate({...wall, center: {}});
-    createStuds({...wall, center: {}});
+    creatTopPlate(wall);
+    createBottomPlate(wall);
+    createStuds(wall);
 }
 
 function creatTopPlate(wall){
-    createBoard({...wall, center: {x: wall.center.x, y: wall.center.y + wall.height/2, z: wall.center.z}}, 'y');
+    switch(wall.axis){
+        case 'x': 
+            wall.center.y += wall.height/2 + twoBy4Dims[2]/2;
+            createBoard({width: wall.height, height: twoBy4Dims[2], depth: twoBy4Dims[4]}, {x: 0, y: wall.center.y, z: 0});
+            break;
+        case 'y': 
+            wall.center.x += wall.height/2 + twoBy4Dims[2]/2;
+            createBoard({width: twoBy4Dims[2], height: wall.height, depth: twoBy4Dims[4]}, {x: wall.center.x, y: 0, z: 0});
+            break;
+        default:
+            wall.center.y += wall.height/2 + twoBy4Dims[2]/2;
+            createBoard({width: twoBy4Dims[4], height: twoBy4Dims[2], depth: wall.height}, {x: 0, y: wall.center.y, z: 0});
+    }
 }
 
 function createBottomPlate(wall){
-    var new_center;
     switch(wall.axis){
-        case 'x':
+        case 'x': 
+            wall.center.y -= wall.height/2 - twoBy4Dims[2]/2;
+            createBoard({width: wall.height, height: twoBy4Dims[2], depth: twoBy4Dims[4]}, {x: 0, y: wall.center.y, z: 0});
             break;
-        case 'y':
+        case 'y': 
+            wall.center.y -= wall.length/2 - twoBy4Dims[2]/2;
+            createBoard({width: twoBy4Dims[2], height: wall.height, depth: twoBy4Dims[4]}, {x: wall.center.y, y: 0, z: 0});
             break;
         default:
-
+            wall.center.y -= wall.height/2 - twoBy4Dims[2]/2;
+            createBoard({width: twoBy4Dims[4], height: twoBy4Dims[2], depth: wall.height}, {x: 0, y: wall.center.y, z: 0});
     }
-
-    createBoard({...wall, center: {x: wall.center.x, y: wall.center.y - wall.height/2, z: wall.center.z}},  'y');
 }
 
 function createStuds(wall){
-    var studsStartingPoint = {...wall, center: {x: wall.center.x + wall.x, y: wall.center.y, z: wall.center.z}};
+    var dims;
+    var sPt;
 
-    while(0){
+    switch(wall.axis){
+        case 'x':
+            dims = {width: twoBy4Dims[4], height: wall.height, depth: twoBy4Dims[2]};
+            sPt = {x: , y: , z:};
+            break;
+        case 'y':
+            dims = {width: wall.height, height: twoBy4Dims[2], depth: twoBy4Dims[4]};
+            sPt = {};
+            break;
+        default: 
+        dims = {width: twoBy4Dims[4], height: wall.height, depth: twoBy4Dims[2]};
+            sPt = {};
+    }
+
+    for(let i=0; i < 9; i+=wall.offset){
         createBoard(studsStartingPoint.center, wall.axis);
-        studsStartingPoint = {...studsStartingPoint, center: {x: wall.center.x - i*wall.offset, y: wall.center.y, z: wall.center.z}};
-        console.log(studsStartingPoint);
+        sPt = {...sPt, y+=i};
+        console.log(sPt);
     }
 }
 
-function createBoard(wall, axis){
-    var boxGeometry;
-    
-    switch(axis){
-        case 'x':
-            boxGeometry = new THREE.BoxGeometry(2/12, 72/12, 4/12);
-            break;
-        case 'y':
-            boxGeometry = new THREE.BoxGeometry(72/12,2/12,4/12);
-            break;
-        default:
-            boxGeometry = new THREE.BoxGeometry(4/12,72/12,2/12);
-    }
+function createBoard(dim, position){
+    var boxGeometry = new THREE.BoxGeometry(dim.width,dim.height,dim.depth);
     var boxMaterial = new THREE.MeshBasicMaterial({
-        color: 0xFF0000,
+        color: 0xe6bf00,
         wireframe: false
     });
     var box = new THREE.Mesh(boxGeometry, boxMaterial);
     scene.add(box);
     box.castShadow = true;
-    box.position.set(wall.x, wall.y, wall.z);
+    box.position.set(position.x, position.y, position.z);
 }
+
 
 function addGuiControls(){
     const gui = new dat.GUI();
@@ -150,7 +169,10 @@ function addGuiControls(){
 }
 
 addGuiControls();
-createLeftWall({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'x', offset: 2});
+createLeftWall({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'z', offset: 2});
+//creatTopPlate({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'z', offset: 2});
+//createBottomPlate({length: 8, height: 8, center: {x: 0, y: 0, z: 0}, axis: 'z', offset: 2});
+//createBoard({x: 1, y: 1, z: 1}, {x: .5, y: .5, z: .5});
 
 function animate(){
     requestAnimationFrame(animate);
